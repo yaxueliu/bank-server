@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.citicbank.dao.AdminMapper">
+
+
+  <insert id="insert" parameterType="com.citicbank.po.Admin">
+    insert into bank_admin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="adminId != null">
+        admin_id,
+      </if>
+      <if test="adminLoginName != null">
+        admin_login_name,
+      </if>
+      <if test="adminPassword != null">
+        admin_password,
+      </if>
+      <if test="adminRealName != null">
+        admin_real_name,
+      </if>
+      <if test="adminNumber != null">
+        admin_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="adminId != null">
+        #{adminId,jdbcType=BIGINT},
+      </if>
+      <if test="adminLoginName != null">
+        #{adminLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="adminPassword != null">
+        #{adminPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="adminRealName != null">
+        #{adminRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="adminNumber != null">
+        #{adminNumber,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from bank_admin
+    where admin_id = #{adminId,jdbcType=BIGINT}
+  </delete>
+
+  <update id="update" parameterType="com.citicbank.po.Admin">
+    update bank_admin
+    <set>
+      <if test="adminPassword != null">
+        admin_password = #{adminPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="adminRealName != null">
+        admin_real_name = #{adminRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="adminNumber != null">
+        admin_number = #{adminNumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    where admin_id = #{adminId,jdbcType=BIGINT}
+  </update>
+
+  <resultMap id="admin_result" type="com.citicbank.po.Admin">
+    <id column="admin_id" jdbcType="BIGINT" property="adminId"/>
+    <result column="admin_login_name" jdbcType="VARCHAR" property="adminLoginName"/>
+    <result column="admin_password" jdbcType="VARCHAR" property="adminPassword"/>
+    <result column="admin_real_name" jdbcType="VARCHAR" property="adminRealName"/>
+    <result column="admin_number" jdbcType="INTEGER" property="adminNumber"/>
+  </resultMap>
+
+  <resultMap id="admin_view_result" type="com.citicbank.vo.AdminView">
+    <id column="admin_id" jdbcType="BIGINT" property="adminId"/>
+    <result column="admin_login_name" jdbcType="VARCHAR" property="adminLoginName"/>
+    <result column="admin_real_name" jdbcType="VARCHAR" property="adminRealName"/>
+    <result column="admin_number" jdbcType="INTEGER" property="adminNumber"/>
+  </resultMap>
+
+  <sql id="admin_columns">
+    admin_id, admin_login_name, admin_password, admin_real_name, admin_number
+  </sql>
+
+  <select id="getById" parameterType="java.lang.Long" resultMap="admin_result">
+    select
+    <include refid="admin_columns"/>
+    from bank_admin
+    where admin_id = #{adminId,jdbcType=BIGINT}
+    limit 1
+  </select>
+
+  <select id="getByLoginName" parameterType="java.lang.Long" resultMap="admin_result">
+    select
+    <include refid="admin_columns"/>
+    from bank_admin
+    where admin_login_name = #{adminLoginName,jdbcType=VARCHAR}
+    limit 1
+  </select>
+
+  <select id="list" parameterType="com.citicbank.query.AdminQuery"
+    resultMap="admin_view_result">
+    select
+    <include refid="admin_columns"/>
+    from bank_admin
+    where 1 = 1
+    <if test="searchWord != null and searchWord != ''">
+      and (admin_login_name like concat('%', #{searchWord,jdbcType=VARCHAR}, '%')
+      OR admin_real_name like concat('%', #{searchWord,jdbcType=VARCHAR}, '%'))
+    </if>
+    <if test="adminNumber != null">
+      and admin_number = #{adminNumber,jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <select id="count" parameterType="com.citicbank.query.AdminQuery" resultType="java.lang.Integer">
+    select count(admin_id)
+    from bank_admin
+    where 1 = 1
+    <if test="adminNumber != null">
+      and admin_number = #{adminNumber,jdbcType=INTEGER}
+    </if>
+    <if test="adminLoginName != null and adminLoginName != ''">
+      and admin_login_name = #{adminLoginName,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+</mapper>

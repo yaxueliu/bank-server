@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.citicbank.dao.CardMapper">
+
+  <insert id="insert" parameterType="com.citicbank.po.Card">
+    insert into bank_card
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cardId != null">
+        card_id,
+      </if>
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="cardNumber != null">
+        card_number,
+      </if>
+      <if test="cardPassword != null">
+        card_password,
+      </if>
+      <if test="cardBalance != null">
+        card_balance,
+      </if>
+      <if test="cancelFlag != null">
+        cancel_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cardId != null">
+        #{cardId,jdbcType=BIGINT},
+      </if>
+      <if test="accountId != null">
+        #{accountId,jdbcType=BIGINT},
+      </if>
+      <if test="cardNumber != null">
+        #{cardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="cardPassword != null">
+        #{cardPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="cardBalance != null">
+        #{cardBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="cancelFlag != null">
+        #{cancelFlag,jdbcType=BOOLEAN},
+      </if>
+    </trim>
+  </insert>
+
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from bank_card
+    where card_id = #{cardId,jdbcType=BIGINT}
+  </delete>
+
+  <update id="update" parameterType="com.citicbank.po.Card">
+    update bank_card
+    <set>
+      <if test="cardPassword != null">
+        card_password = #{cardPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="cardBalance != null">
+        card_balance = #{cardBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="cancelFlag != null">
+        cancel_flag = #{cancelFlag,jdbcType=BOOLEAN},
+      </if>
+    </set>
+    where card_number = #{cardNumber,jdbcType=VARCHAR}
+  </update>
+
+  <resultMap id="card_result" type="com.citicbank.po.Card">
+    <id column="card_id" jdbcType="BIGINT" property="cardId"/>
+    <result column="account_id" jdbcType="BIGINT" property="accountId"/>
+    <result column="card_number" jdbcType="VARCHAR" property="cardNumber"/>
+    <result column="card_password" jdbcType="VARCHAR" property="cardPassword"/>
+    <result column="card_balance" jdbcType="DECIMAL" property="cardBalance"/>
+    <result column="cancel_flag" jdbcType="BOOLEAN" property="cancelFlag"/>
+  </resultMap>
+
+  <resultMap id="card_view_result" type="com.citicbank.vo.CardView">
+    <id column="card_id" jdbcType="BIGINT" property="cardId"/>
+    <result column="account_id" jdbcType="BIGINT" property="accountId"/>
+    <result column="card_number" jdbcType="VARCHAR" property="cardNumber"/>
+    <result column="card_balance" jdbcType="DECIMAL" property="cardBalance"/>
+    <result column="cancel_flag" jdbcType="BOOLEAN" property="cancelFlag"/>
+  </resultMap>
+
+  <sql id="card_columns">
+    card_id, account_id, card_number, card_password, card_balance, cancel_flag
+  </sql>
+
+  <select id="getById" parameterType="java.lang.Long" resultMap="card_result">
+    select
+    <include refid="card_columns"/>
+    from bank_card
+    where card_id = #{cardId,jdbcType=BIGINT}
+  </select>
+
+  <select id="getByCardNumber" parameterType="java.lang.String" resultMap="card_result">
+    select
+    <include refid="card_columns"/>
+    from bank_card
+    where card_number = #{cardNumber,jdbcType=VARCHAR}
+  </select>
+
+  <select id="list" parameterType="com.citicbank.query.CardQuery"
+    resultMap="card_view_result">
+    select
+    <include refid="card_columns"/>
+    from bank_card
+    where 1 = 1
+    <if test="accountId != null">
+      and account_id = #{accountId,jdbcType=BIGINT}
+    </if>
+  </select>
+</mapper>

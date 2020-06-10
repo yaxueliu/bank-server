@@ -1,0 +1,8 @@
+server:
+  port: 9000
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: LiuYaXue123456!
+    url: jdbc:mysql://192.168.3.60/bank_server

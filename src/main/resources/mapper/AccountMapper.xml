@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.citicbank.dao.AccountMapper">
+
+  <insert id="insert" parameterType="com.citicbank.po.Account">
+    insert into bank_account
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="idCard != null">
+        id_card,
+      </if>
+      <if test="accountRealName != null">
+        account_real_name,
+      </if>
+      <if test="accountPassword != null">
+        account_password,
+      </if>
+      <if test="accountPhone != null">
+        account_phone,
+      </if>
+      <if test="accountAddress != null">
+        account_address,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="accountId != null">
+        #{accountId,jdbcType=BIGINT},
+      </if>
+      <if test="idCard != null">
+        #{idCard,jdbcType=CHAR},
+      </if>
+      <if test="accountRealName != null">
+        #{accountRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPassword != null">
+        #{accountPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPhone != null">
+        #{accountPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="accountAddress != null">
+        #{accountAddress,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from bank_account
+    where account_id = #{accountId,jdbcType=BIGINT}
+  </delete>
+
+  <update id="update" parameterType="com.citicbank.po.Account">
+
+    update bank_account
+    <set>
+      <if test="accountRealName != null">
+        account_real_name = #{accountRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPassword != null">
+        account_password = #{accountPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPhone != null">
+        account_phone = #{accountPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="accountAddress != null">
+        account_address = #{accountAddress,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where account_id = #{accountId,jdbcType=BIGINT}
+  </update>
+
+  <resultMap id="account_result" type="com.citicbank.po.Account">
+    <id column="account_id" jdbcType="BIGINT" property="accountId"/>
+    <result column="id_card" jdbcType="CHAR" property="idCard"/>
+    <result column="account_real_name" jdbcType="VARCHAR" property="accountRealName"/>
+    <result column="account_password" jdbcType="VARCHAR" property="accountPassword"/>
+    <result column="account_phone" jdbcType="VARCHAR" property="accountPhone"/>
+    <result column="account_address" jdbcType="VARCHAR" property="accountAddress"/>
+  </resultMap>
+
+  <resultMap id="account_view_result" type="com.citicbank.vo.AccountView">
+    <id column="account_id" jdbcType="BIGINT" property="accountId"/>
+    <result column="id_card" jdbcType="CHAR" property="idCard"/>
+    <result column="account_real_name" jdbcType="VARCHAR" property="accountRealName"/>
+    <result column="account_phone" jdbcType="VARCHAR" property="accountPhone"/>
+    <result column="account_address" jdbcType="VARCHAR" property="accountAddress"/>
+  </resultMap>
+
+  <sql id="account_columns">
+    account_id, id_card, account_real_name, account_password, account_phone, account_address
+  </sql>
+
+  <select id="getById" parameterType="java.lang.Long" resultMap="account_result">
+    select
+    <include refid="account_columns"/>
+    from bank_account
+    where account_id = #{accountId,jdbcType=BIGINT}
+    limit 1
+  </select>
+
+  <select id="getByIdCard" parameterType="java.lang.Long" resultMap="account_result">
+    select
+    <include refid="account_columns"/>
+    from bank_account
+    where id_card = #{idCard,jdbcType=VARCHAR}
+    limit 1
+  </select>
+
+  <select id="list" parameterType="com.citicbank.query.AccountQuery"
+    resultMap="account_view_result">
+    select
+    <include refid="account_columns"/>
+    from bank_account
+    where 1 = 1
+    <if test="searchWord != null and searchWord != ''">
+      and (account_real_name like concat('%', #{searchWord,jdbcType=VARCHAR}, '%')
+      OR account_address like concat('%', #{searchWord,jdbcType=VARCHAR}, '%'))
+    </if>
+    <if test="accountPhone != null and accountPhone != ''">
+      and account_phone = #{accountPhone,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <select id="count" parameterType="com.citicbank.query.AccountQuery"
+    resultType="java.lang.Integer">
+    select count(account_id) from bank_account
+    where 1 = 1
+    <if test="idCard != null and idCard != ''">
+      and id_card = #{idCard,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+</mapper>
